@@ -4,7 +4,7 @@ import 'package:aimessenger/service/api_service.dart';
 import 'package:flutter/material.dart';
 
 class ModelsProvider with ChangeNotifier {
-  String currentModel = "ada";
+  String currentModel = "text-davinci-003";
   String get getCurrentModel {
     return currentModel;
   }

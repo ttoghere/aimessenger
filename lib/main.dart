@@ -1,6 +1,8 @@
 import 'package:aimessenger/constants.dart';
+import 'package:aimessenger/providers/models_provider.dart';
 import 'package:aimessenger/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,17 +13,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Ai Messenger',
-      theme: ThemeData(
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
-        appBarTheme: AppBarTheme(
-          color: cardColor,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ModelsProvider(),
         ),
-        primarySwatch: Colors.blue,
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Ai Messenger',
+        theme: ThemeData(
+          scaffoldBackgroundColor: scaffoldBackgroundColor,
+          appBarTheme: AppBarTheme(
+            color: cardColor,
+          ),
+          primarySwatch: Colors.blue,
+        ),
+        home: const ChatScreen(),
       ),
-      home: const ChatScreen(),
     );
   }
 }
