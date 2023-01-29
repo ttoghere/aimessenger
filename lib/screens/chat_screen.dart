@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:aimessenger/service/api_service.dart';
+
 import '/constants.dart';
 import '/service/service.dart';
 import '/widgets/widgets.dart';
@@ -87,7 +91,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          try {
+                            await ApiService.getModels();
+                          } catch (error) {
+                            log(error.toString());
+                          }
+                        },
                         icon: Icon(
                           Icons.send,
                           color: Colors.green[200]!,
