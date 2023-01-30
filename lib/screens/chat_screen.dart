@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:aimessenger/models/chat_model.dart';
+import 'package:aimessenger/providers/chats_provider.dart';
 import 'package:aimessenger/providers/models_provider.dart';
 import 'package:aimessenger/service/api_service.dart';
 import 'package:provider/provider.dart';
@@ -39,11 +40,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [];
 
   @override
   Widget build(BuildContext context) {
     final modelsProvider = Provider.of<ModelsProvider>(context);
+    final chatsProvider = Provider.of<ChatsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -67,11 +69,12 @@ class _ChatScreenState extends State<ChatScreen> {
             Flexible(
                 child: ListView.builder(
                     controller: scrollController,
-                    itemCount: chatList.length,
+                    itemCount: chatsProvider.getChatList.length,
                     itemBuilder: (context, index) {
                       return ChatWidget(
-                          msg: chatList[index].msg,
-                          chatIndex: chatList[index].chatIndex);
+                          msg: chatsProvider.getChatList[index].msg,
+                          chatIndex:
+                              chatsProvider.getChatList[index].chatIndex);
                     })),
             if (_isTyping) ...[
               const SpinKitThreeBounce(
@@ -96,7 +99,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         controller: textEditingController,
                         onSubmitted: (value) async {
-                          await sendMessageFCT(modelsProvider: modelsProvider);
+                          await sendMessageFCT(
+                              modelsProvider: modelsProvider,
+                              chatsProvider: chatsProvider);
                         },
                         decoration: InputDecoration.collapsed(
                           hintText: "How Can I Help You?",
@@ -108,7 +113,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        await sendMessageFCT(modelsProvider: modelsProvider);
+                        await sendMessageFCT(
+                            modelsProvider: modelsProvider,
+                            chatsProvider: chatsProvider);
                       },
                       icon: Icon(
                         Icons.send,
@@ -130,21 +137,41 @@ class _ChatScreenState extends State<ChatScreen> {
         duration: const Duration(seconds: 2), curve: Curves.bounceOut);
   }
 
-  Future<void> sendMessageFCT({required ModelsProvider modelsProvider}) async {
+  Future<void> sendMessageFCT(
+      {required ModelsProvider modelsProvider,
+      required ChatsProvider chatsProvider}) async {
+    if (textEditingController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const TextWidget(
+          label: "Please Type a message",
+        ),
+        backgroundColor: Colors.red[900],
+      ));
+    }
     try {
       setState(() {
         _isTyping = true;
-        chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
+        // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
+        chatsProvider.addUserMessage(msg: textEditingController.text);
         textEditingController.clear();
         focusNode.unfocus();
       });
       log("Request has been Sent");
-      chatList.addAll(await ApiService.postChat(
-          message: textEditingController.text,
-          modelId: modelsProvider.getCurrentModel));
+      chatsProvider.sendMessageAndGetAnswers(
+          msg: textEditingController.text,
+          chosenModelId: modelsProvider.getCurrentModel);
+      // chatList.addAll(await ApiService.postChat(
+      //     message: textEditingController.text,
+      //     modelId: modelsProvider.getCurrentModel));
       setState(() {});
     } catch (error) {
       log(error.toString());
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: TextWidget(
+          label: error.toString(),
+        ),
+        backgroundColor: Colors.red[900],
+      ));
     } finally {
       setState(() {
         scrollListToEnd();

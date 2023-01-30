@@ -1,4 +1,5 @@
 import 'package:aimessenger/constants.dart';
+import 'package:aimessenger/providers/chats_provider.dart';
 import 'package:aimessenger/providers/models_provider.dart';
 import 'package:aimessenger/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => ModelsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChatsProvider(),
         ),
       ],
       child: MaterialApp(
