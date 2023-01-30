@@ -2,7 +2,7 @@ import 'package:aimessenger/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 String baseUrl = "https://api.openai.com/v1";
-String apiKey = "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";
+String apiKey = "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";
 
 Color scaffoldBackgroundColor = const Color(0xFF343541);
 Color cardColor = const Color(0xFF444654);
